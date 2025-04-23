@@ -1,0 +1,373 @@
+{##}
+{#<head>#}
+{#    <meta charset="UTF-8">#}
+{#    <meta name="viewport" content="width=device-width, initial-scale=1.0">#}
+{#    <title>Pending Orders</title>#}
+{#</head>#}
+{#<body>#}
+{#    <h1>Pending Orders</h1>#}
+{#    <div id="pending-orders">#}
+{#        {% for order in orders %}#}
+{#            <div id="order-{{ order.id }}">#}
+{#                <p><strong>Order ID:</strong> {{ order.id }}</p>#}
+{#                <p><strong>Status:</strong> {{ order.status }}</p>#}
+{#                <p><strong>City:</strong> {{ order.city }}</p>#}
+{#                <p><strong>Address:</strong> {{ order.address }}</p>#}
+{#                <p><strong>Phone:</strong> {{ order.phone }}</p>#}
+{#                <button onclick="changeStatus({{ order.id }})">Mark as Delivered</button>#}
+{#                <a href="/management/{{order.id}}/details/">Show cart</a>  <!-- Include the link -->#}
+{##}
+{#                <hr>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{##}
+{#    </div>#}
+{##}
+{#    <script>#}
+{#        // Function to render an order in the list#}
+{#        function renderOrder(order) {#}
+{#            console.log('Rendering order:', order);  // Log the order being rendered#}
+{#            const orderElement = document.createElement('div');#}
+{#            orderElement.id = `order-${order.id}`;#}
+{#            orderElement.innerHTML = `#}
+{#                <p><strong>Order ID:</strong> ${order.id}</p>#}
+{#                <p><strong>Status:</strong> ${order.status}</p>#}
+{#                <p><strong>City:</strong> ${order.city}</p>#}
+{#                <p><strong>Address:</strong> ${order.address}</p>#}
+{#                <p><strong>Phone:</strong> ${order.phone}</p>#}
+{##}
+{##}
+{##}
+{#                ${order.status === 'Delivered' ? '' : `<button onclick="changeStatus(${order.id})">Mark as Delivered</button>`}#}
+{#            <a href="/management/${order.id}/details/">Show cart</a>  <!-- Include the link -->#}
+{#                <hr>#}
+{#            `;#}
+{#            return orderElement;#}
+{#        }#}
+{##}
+{#        // Connect to the WebSocket#}
+{#        const socket = new WebSocket('ws://localhost:8000/ws/orders/');#}
+{##}
+{#        // Handle incoming WebSocket messages#}
+{#        socket.onmessage = function(event) {#}
+{#            const data = JSON.parse(event.data);#}
+{#            const order = data.message;#}
+{#            console.log('Received order update:', order);  // Log the incoming order#}
+{##}
+{#            const orderElement = document.getElementById(`order-${order.id}`);#}
+{#            const pendingOrders = document.getElementById('pending-orders');#}
+{##}
+{#            if (orderElement) {#}
+{#                // Update the existing order#}
+{#                orderElement.replaceWith(renderOrder(order));#}
+{#            } else if (order.status === 'PENDING') {#}
+{#                // Add the new order to the list if it's pending#}
+{#                pendingOrders.appendChild(renderOrder(order));#}
+{#            }#}
+{##}
+{#            // Remove the order from the list if status is "Delivered"#}
+{#            if (order.status === 'Delivered') {#}
+{#                const orderElement = document.getElementById(`order-${order.id}`);#}
+{#                if (orderElement) {#}
+{#                    orderElement.remove();#}
+{#                }#}
+{#            }#}
+{#        };#}
+{##}
+{##}
+{##}
+{##}
+{##}
+{#        // Function to change order status#}
+{#        function changeStatus(orderId) {#}
+{#            console.log('Sending WebSocket message for order:', orderId);  // Log the order ID#}
+{#            // Disable the button to prevent duplicate clicks#}
+{#            const button = document.querySelector(`button[onclick="changeStatus(${orderId})"]`);#}
+{#            if (button) {#}
+{#                button.disabled = true;#}
+{#            }#}
+{##}
+{#            // Send a WebSocket message to update the status#}
+{#            socket.send(JSON.stringify({#}
+{#                'type': 'change_status',#}
+{#                'order_id': orderId,#}
+{#                'new_status': 'Delivered',#}
+{#            }));#}
+{#        }#}
+{##}
+{#        // Handle connection open#}
+{#        socket.onopen = function(event) {#}
+{#            console.log('WebSocket connection established.');#}
+{#        };#}
+{##}
+{#        // Handle connection close#}
+{#        socket.onclose = function(event) {#}
+{#            console.log('WebSocket connection closed.');#}
+{#        };#}
+{##}
+{#        // Handle errors#}
+{#        socket.onerror = function(error) {#}
+{#            console.error('WebSocket error:', error);#}
+{#        };#}
+{#    </script>#}
+{#</body>#}
+{#</html>#}
+{##}
+
+
+<!-- templates/pending_orders.html -->
+{% extends 'base.html' %}
+
+{% block title %}Pending Orders - E-Commerce Management{% endblock %}
+
+{% block content %}
+<div id="pending-orders-container">
+    <h1>Pending Orders</h1>
+
+    <div id="pending-orders">
+        {% if page_obj.object_list %}
+            {% for order in page_obj.object_list %}
+                <div class="order-card" id="order-{{ order.id }}">
+                    <p><strong>Order ID:</strong> {{ order.id }}</p>
+                    <p><strong>Status:</strong> {{ order.status }}</p>
+                    <p><strong>City:</strong> {{ order.city }}</p>
+                    <p><strong>Address:</strong> {{ order.address }}</p>
+                    <p><strong>Phone:</strong> {{ order.phone }}</p>
+                    <a href="/management/{{ order.id }}/details/" class="cart-link">Show cart</a>
+                    {% if order.status != "Delivered" %}
+                        <button onclick="changeStatus({{ order.id }})" class="status-btn">Mark as Delivered</button>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% endif %}
+    </div>
+
+    <!-- Pagination Controls -->
+    <div class="pagination">
+        <span class="step-links">
+            {% if page_obj.has_previous %}
+                <a href="?page=1">&laquo; first</a>
+                <a href="?page={{ page_obj.previous_page_number }}">previous</a>
+            {% endif %}
+
+            <span class="current">
+                Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.
+            </span>
+
+            {% if page_obj.has_next %}
+                <a href="?page={{ page_obj.next_page_number }}">next</a>
+                <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+            {% endif %}
+        </span>
+    </div>
+</div>
+
+<style>
+    /* Container */
+    #pending-orders-container {
+        max-width: 900px;
+        margin: 20px;
+        padding: 20px;
+    }
+
+    #pending-orders-container h1 {
+        color: var(--link-color);
+        margin-bottom: 15px;
+    }
+
+    /* Order Cards */
+    .order-card {
+        background: var(--card-bg);
+        padding: 15px;
+        border-radius: 5px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        margin-bottom: 15px;
+        border-left: 4px solid var(--link-color);
+    }
+
+    .order-card p {
+        margin: 3px 0;
+        font-size: 15px;
+        color: var(--text-color);
+    }
+
+    /* Show Cart Link */
+    .cart-link {
+        display: inline-block;
+        margin-top: 5px;
+        text-decoration: none;
+        font-weight: bold;
+        color: var(--link-color);
+    }
+
+    /* Status Button */
+    .status-btn {
+        background-color: var(--link-color);
+        color: white;
+        border: none;
+        padding: 6px 10px;
+        font-size: 14px;
+        border-radius: 3px;
+        cursor: pointer;
+        transition: 0.2s ease-in-out;
+    }
+
+    .status-btn:hover {
+        background-color: #0056b3;
+    }
+
+    /* Pagination */
+    .pagination {
+        margin-top: 20px;
+    }
+
+    .pagination a {
+        text-decoration: none;
+        padding: 6px 10px;
+        border-radius: 3px;
+        margin: 0 3px;
+        background: var(--card-bg);
+        border: 1px solid var(--border-color);
+        color: var(--text-color);
+        transition: 0.2s ease-in-out;
+    }
+
+    .pagination a:hover {
+        background: var(--link-color);
+        color: white;
+    }
+
+    .pagination .current {
+        font-weight: bold;
+        padding: 6px 10px;
+    }
+</style>
+{#    <div id="pending-orders">#}
+{#    {% if page_obj.object_list %}#}
+{##}
+{#        {% for order in page_obj.object_list %}#}
+{#            <div id="order-{{ order.id }}">#}
+{#                <p><strong>Order ID:</strong> {{ order.id }}</p>#}
+{#                <p><strong>Status:</strong> {{ order.status }}</p>#}
+{#                <p><strong>City:</strong> {{ order.city }}</p>#}
+{#                <p><strong>Address:</strong> {{ order.address }}</p>#}
+{#                <p><strong>Phone:</strong> {{ order.phone }}</p>#}
+{#                <button onclick="changeStatus({{ order.id }})">Mark as Delivered</button>#}
+{#                <a href="/management/{{order.id}}/details/">Show cart</a>  <!-- Include the link -->#}
+{##}
+{#                <hr>#}
+{#            </div>#}
+{#        {% endfor %}#}
+{##}
+{#    </div>#}
+{#      <!-- Pagination Controls -->#}
+{##}
+{#        <div class="pagination">#}
+{#            <span class="step-links">#}
+{#                {% if page_obj.has_previous %}#}
+{#                    <a href="?page=1">&laquo; first</a>#}
+{#                    <a href="?page={{ page_obj.previous_page_number }}">previous</a>#}
+{#                {% endif %}#}
+{##}
+{#                <span class="current">#}
+{#                    Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}.#}
+{#                </span>#}
+{##}
+{#                {% if page_obj.has_next %}#}
+{#                    <a href="?page={{ page_obj.next_page_number }}">next</a>#}
+{#                    <a href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>#}
+{#                {% endif %}#}
+{#            </span>#}
+{#        </div>#}
+{##}
+{#    {% endif %}#}
+
+    <script>
+        // Function to render an order in the list
+        function renderOrder(order) {
+            console.log('Rendering order:', order);  // Log the order being rendered
+            const orderElement = document.createElement('div');
+            orderElement.id = `order-${order.id}`;
+            orderElement.innerHTML = `
+                <p><strong>Order ID:</strong> ${order.id}</p>
+                <p><strong>Status:</strong> ${order.status}</p>
+                <p><strong>City:</strong> ${order.city}</p>
+                <p><strong>Address:</strong> ${order.address}</p>
+                <p><strong>Phone:</strong> ${order.phone}</p>
+
+
+
+                ${order.status === 'Delivered' ? '' : `<button onclick="changeStatus(${order.id})">Mark as Delivered</button>`}
+            <a href="/management/${order.id}/details/">Show cart</a>  <!-- Include the link -->
+                <hr>
+            `;
+            return orderElement;
+        }
+
+        // Connect to the WebSocket
+        const socket = new WebSocket('ws://localhost:8000/ws/orders/');
+
+        // Handle incoming WebSocket messages
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            const order = data.message;
+            console.log('Received order update:', order);  // Log the incoming order
+
+            const orderElement = document.getElementById(`order-${order.id}`);
+            const pendingOrders = document.getElementById('pending-orders');
+
+            if (orderElement) {
+                // Update the existing order
+                orderElement.replaceWith(renderOrder(order));
+            } else if (order.status === 'PENDING') {
+                // Add the new order to the list if it's pending
+                pendingOrders.appendChild(renderOrder(order));
+            }
+
+            // Remove the order from the list if status is "Delivered"
+            if (order.status === 'Delivered') {
+                const orderElement = document.getElementById(`order-${order.id}`);
+                if (orderElement) {
+                    orderElement.remove();
+                }
+            }
+        };
+
+
+
+
+
+        // Function to change order status
+        function changeStatus(orderId) {
+            console.log('Sending WebSocket message for order:', orderId);  // Log the order ID
+            // Disable the button to prevent duplicate clicks
+            const button = document.querySelector(`button[onclick="changeStatus(${orderId})"]`);
+            if (button) {
+                button.disabled = true;
+            }
+
+            // Send a WebSocket message to update the status
+            socket.send(JSON.stringify({
+                'type': 'change_status',
+                'order_id': orderId,
+                'new_status': 'Delivered',
+            }));
+        }
+
+        // Handle connection open
+        socket.onopen = function(event) {
+            console.log('WebSocket connection established.');
+        };
+
+        // Handle connection close
+        socket.onclose = function(event) {
+            console.log('WebSocket connection closed.');
+        };
+
+        // Handle errors
+        socket.onerror = function(error) {
+            console.error('WebSocket error:', error);
+        };
+    </script>
+
+{% endblock %}
