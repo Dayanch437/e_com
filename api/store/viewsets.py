@@ -1,6 +1,6 @@
-from apps.category.models import Category
-from apps.store.models import Product, Comments
-from .serializers import CategorySerializer,CommentCreateSerializer
+from apps.category.models import Category, Slider
+from apps.store.models import Product, Comments, Image
+from .serializers import CategorySerializer, CommentCreateSerializer, ImageSliderSerializer, SliderSerializer
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.viewsets import ModelViewSet
@@ -43,3 +43,6 @@ class CommentViewSet(ModelViewSet):
     serializer_class = CommentCreateSerializer
     http_method_names = ['post']
 
+class SliderViewSet(ModelViewSet):
+    queryset = Slider.objects.all()
+    serializer_class = SliderSerializer

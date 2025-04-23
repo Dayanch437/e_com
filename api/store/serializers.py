@@ -1,9 +1,7 @@
 from rest_framework.serializers import ModelSerializer
-from apps.store.models import Category, Image
-from apps.store.models import Product,Comments
-from api.user.serializers import UserSerializer
+from apps.store.models import Product,Comments,Image
 from rest_framework import serializers
-
+from apps.category.models import Category,Slider,SliderImage
 
 class CategorySerializer(ModelSerializer):
     class Meta:
@@ -41,6 +39,13 @@ class ImageSerializer(ModelSerializer):
         fields = ['image']
 
 
+class ImageSliderSerializer(ModelSerializer):
+    class Meta:
+        model = Image
+        fields = ['slider']
+
+
+
 class ProductSerializer(ModelSerializer):
     comments = CommentsSerializer(many=True,read_only=True)
     pictures = ImageSerializer(read_only=True,many=True)
@@ -60,3 +65,18 @@ class ProductSerializer(ModelSerializer):
             'modified_date',
             'comments',
         ]
+
+
+class SliderImageSerializer(ModelSerializer):
+
+    class Meta:
+        model = SliderImage
+        fields = ['image']
+
+
+class SliderSerializer(ModelSerializer):
+
+    images = SliderImageSerializer(many=True,read_only=True)
+    class Meta:
+        model = Slider
+        fields = ['id','images']

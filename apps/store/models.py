@@ -1,7 +1,7 @@
 from django.db import models
 
 from apps.cart.models import User
-from apps.category.models import Category
+from apps.category.models import Category, Slider
 from apps.utils.fields import CompressedImageField
 
 # Create your models here.
@@ -35,10 +35,12 @@ class Comments(models.Model):
 
 class Image(models.Model):
     image = CompressedImageField(upload_to="products/images", blank=True)
-    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='pictures')
+    product = models.ForeignKey(Product, on_delete=models.CASCADE,related_name='pictures',blank=True, null=True)
     class Meta:
         verbose_name_plural = 'images'
         db_table = 'products_images'
 
     def __str__(self):
         return self.image.name
+
+
