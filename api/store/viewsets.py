@@ -34,7 +34,7 @@ class ProductViewSet(ModelViewSet):
 
 @api_view(["GET"])
 def latest_product_view(request):
-    products = Product.objects.order_by("-created_date")[:5]
+    products = Product.objects.order_by("-created_date")[:6]
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 

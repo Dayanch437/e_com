@@ -45,7 +45,6 @@ class ImageSliderSerializer(ModelSerializer):
         fields = ['slider']
 
 
-
 class ProductSerializer(ModelSerializer):
     comments = CommentsSerializer(many=True,read_only=True)
     pictures = ImageSerializer(read_only=True,many=True)
@@ -71,12 +70,16 @@ class SliderImageSerializer(ModelSerializer):
 
     class Meta:
         model = SliderImage
-        fields = ['image']
+        fields = ['id','image']
 
 
 class SliderSerializer(ModelSerializer):
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        data['images'] = SliderImageSerializer(instance.images.all(), many=True).data
+        return data
 
-    images = SliderImageSerializer(many=True,read_only=True)
     class Meta:
         model = Slider
         fields = ['id','images']
+

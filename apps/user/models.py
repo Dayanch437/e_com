@@ -1,4 +1,6 @@
-
+from django.utils import timezone
+from datetime import timedelta
+import random
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager,PermissionsMixin
 from django.db import models
 from phonenumber_field.modelfields import PhoneNumberField
@@ -77,17 +79,12 @@ class User(AbstractBaseUser,PermissionsMixin):
         return True
 
 
-from django.db import models
-from django.utils import timezone
-from datetime import timedelta
-import random
-
-
 class PasswordResetOTP(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     otp = models.CharField(max_length=6)
     created_at = models.DateTimeField(auto_now_add=True)
     is_used = models.BooleanField(default=False)
+
 
     @classmethod
     def generate_otp(cls, user):
@@ -97,6 +94,7 @@ class PasswordResetOTP(models.Model):
         # Generate 6-digit OTP
         otp = str(random.randint(100000, 999999))
         return cls.objects.create(user=user, otp=otp)
+
 
     def is_valid(self):
         return not self.is_used and (timezone.now() - self.created_at) < timedelta(minutes=15)
