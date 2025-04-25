@@ -32,11 +32,12 @@ class ProductViewSet(ModelViewSet):
         return Response(serializer.data)
 
 
-@api_view(["GET"])
-def latest_product_view(request):
-    products = Product.objects.order_by("-created_date")[:6]
-    serializer = ProductSerializer(products, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+class LastestProductsViewSet(ModelViewSet):
+    queryset = Product.objects.all().order_by('-created_date')[:6]
+    serializer_class = ProductSerializer
+    permission_classes = (AllowAny,)
+    http_method_names = ['get']
+
 
 class CommentViewSet(ModelViewSet):
     queryset = Comments.objects.all().order_by("-created_date")
