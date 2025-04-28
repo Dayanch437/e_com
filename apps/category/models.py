@@ -18,21 +18,11 @@ class Category(models.Model):
         verbose_name_plural = "Categories"
 
 
-class SliderImage(models.Model):
-    image = CompressedImageField(upload_to="product/images",null=True, blank=True)
-    slider = models.ForeignKey('category.Slider', on_delete=models.CASCADE,related_name='images')
-    def __str__(self):
-        return self.image.name
-
-
-class Slider(models.Model):
-    title = models.CharField(max_length=100,blank=True)
-    description = models.TextField(blank=True)
-    link = models.URLField(blank=True)  # Optional button or redirect
-    is_active = models.BooleanField(default=True)
-    order = models.PositiveIntegerField(default=0,blank=True)  # for manual sorting
-    created_at = models.DateTimeField(auto_now_add=True)
-
+class Banner(models.Model):
+    title = models.CharField(max_length=100)
+    image = CompressedImageField(upload_to="banner",null=True, blank=True)
+    class Meta:
+        verbose_name = 'banner'
+        verbose_name_plural = 'banners'
     def __str__(self):
         return self.title
-

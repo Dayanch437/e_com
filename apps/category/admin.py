@@ -1,6 +1,6 @@
 from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
-from apps.category.models import Category,Slider,SliderImage
+from apps.category.models import Category,Banner
 from apps.store.models import Product,Comments,Image  # Adjust import if needed
 class CommentsInline(admin.TabularInline):
     model = Comments
@@ -34,11 +34,6 @@ class CategoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Category, CategoryAdmin)
-@admin.register(Slider)
-class SliderAdmin(admin.ModelAdmin):
+@admin.register(Banner)
+class BannerAdmin(admin.ModelAdmin):
     list_display = ['id']
-
-
-@admin.register(SliderImage)
-class SliderImageAdmin(admin.ModelAdmin):
-    list_display = ['id','image']

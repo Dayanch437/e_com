@@ -1,13 +1,19 @@
 from rest_framework.serializers import ModelSerializer
 from apps.store.models import Product,Comments,Image
 from rest_framework import serializers
-from apps.category.models import Category,Slider,SliderImage
+from apps.category.models import Category, Banner
+
 
 class CategorySerializer(ModelSerializer):
     class Meta:
         model = Category
         fields = "__all__"
 
+
+class BannerSerializer(ModelSerializer):
+    class Meta:
+        model = Banner
+        fields = ['id','image']
 
 class CommentsSerializer(ModelSerializer):
     user = serializers.CharField(source='user.username', read_only=True)
@@ -26,7 +32,6 @@ class CommentCreateSerializer(ModelSerializer):
     class Meta:
         model = Comments
         fields = ['product','text']
-
     def create(self, validated_data):
         user = self.context['request'].user
         validated_data['user'] = user
@@ -36,13 +41,7 @@ class CommentCreateSerializer(ModelSerializer):
 class ImageSerializer(ModelSerializer):
     class Meta:
         model = Image
-        fields = ['image']
-
-
-class ImageSliderSerializer(ModelSerializer):
-    class Meta:
-        model = Image
-        fields = ['slider']
+        fields = ['image','color_picture']
 
 
 class ProductSerializer(ModelSerializer):
@@ -66,20 +65,5 @@ class ProductSerializer(ModelSerializer):
         ]
 
 
-class SliderImageSerializer(ModelSerializer):
 
-    class Meta:
-        model = SliderImage
-        fields = ['id','image']
-
-
-class SliderSerializer(ModelSerializer):
-    def to_representation(self, instance):
-        data = super().to_representation(instance)
-        data['images'] = SliderImageSerializer(instance.images.all(), many=True).data
-        return data
-
-    class Meta:
-        model = Slider
-        fields = ['id','images']
 
