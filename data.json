@@ -1,10 +1,42 @@
 [
   {
-    "name": "Sample Product 1",
-    "price": "19.99",
-    "description": "This is a red sample product.",
-    "stock": 500,
+    "name": "iPhone 11 (Ulanylan)",
+    "price": 299.99,
+    "description": "64GB, gowy ýagdaýda, batareýa güýji 85%",
+    "stock": 6,
     "is_available": true,
-    "category": 1
+    "category": 2
+  },
+  {
+    "name": "Samsung Galaxy S20 (Ulanylan)",
+    "price": 259.99,
+    "description": "128GB, ekran çyzylman, ähli funksiýa işjeň",
+    "stock": 4,
+    "is_available": true,
+    "category": 2
+  },
+  {
+    "name": "Xiaomi Redmi Note 10 (Ulanylan)",
+    "price": 179.99,
+    "description": "Gowy saklanan, karobka we zaryadka bar",
+    "stock": 7,
+    "is_available": true,
+    "category": 2
+  },
+  {
+    "name": "iPhone SE 2020 (Ulanylan)",
+    "price": 189.99,
+    "description": "64GB, Touch ID, ykjam we işjeň ýagdaýda",
+    "stock": 5,
+    "is_available": true,
+    "category": 2
+  },
+  {
+    "name": "Huawei P30 Lite (Ulanylan)",
+    "price": 149.99,
+    "description": "Ekranda ownuk çyzgy, ähli programmalary açýar",
+    "stock": 3,
+    "is_available": true,
+    "category": 2
   }
 ]

@@ -2,6 +2,9 @@ from import_export.admin import ImportExportModelAdmin
 from django.contrib import admin
 from apps.category.models import Category,Banner
 from apps.store.models import Product,Comments,Image  # Adjust import if needed
+
+
+
 class CommentsInline(admin.TabularInline):
     model = Comments
     extra = 0
@@ -13,7 +16,7 @@ class ImageInline(admin.TabularInline):
 
 class ProductAdmin(ImportExportModelAdmin):  # Enables import/export
     list_display = ('name', 'price', 'stock', 'is_available', 'category')
-    list_filter = ('is_available', 'category')
+    list_filter = ('id','is_available', 'category')
     search_fields = ('name',)
     inlines = [CommentsInline, ImageInline]
 
@@ -23,14 +26,17 @@ class ProductInline(admin.TabularInline):
     model = Product
     extra = 0
 
-    readonly_fields = ('name', 'price', 'stock', 'is_available', 'created_date', 'modified_date')
+    readonly_fields = ('id','name', 'price', 'stock', 'is_available', 'created_date', 'modified_date')
     can_delete = False
     show_change_link = True
 
 class CategoryAdmin(admin.ModelAdmin):
-    list_display = ('name',)
+    list_display = ('id','name',)
     inlines = [ProductInline]
-
+#
+# @admin.register(Product)
+# class ModelNameAdmin(admin.ModelAdmin):
+#     list_display = ['id']
 
 
 admin.site.register(Category, CategoryAdmin)
