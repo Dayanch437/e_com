@@ -8,7 +8,7 @@ from apps.utils.fields import CompressedImageField
 
 
 class Product(models.Model):
-    name = models.CharField(max_length=200, unique=True)
+    name = models.CharField(max_length=25, unique=True)
     image = CompressedImageField(upload_to="products/images",blank=True, null=True)
     # color = CompressedImageField(upload_to="products/images",blank=True, null=True)
     price = models.DecimalField(max_digits=10, decimal_places=2)

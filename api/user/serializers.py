@@ -1,7 +1,6 @@
-from cProfile import Profile
-
 from rest_framework.serializers import ModelSerializer
 from django.contrib.auth import get_user_model
+from rest_framework import serializers
 User = get_user_model()  # Always use this for custom user models
 
 class UserSerializer(ModelSerializer):
@@ -11,8 +10,6 @@ class UserSerializer(ModelSerializer):
         extra_kwargs = {'password': {'write_only': True}}
 
 
-from rest_framework import serializers
-from django.contrib.auth import get_user_model
 
 
 class RequestResetSerializer(serializers.Serializer):
@@ -33,9 +30,16 @@ class ResetPasswordSerializer(serializers.Serializer):
             raise serializers.ValidationError("Passwords do not match")
         return data
 
+
+
 class ProfileSerializer(ModelSerializer):
 
     class Meta:
         model = User
         fields = ['id','username','first_name','last_name','phone_number', 'email', 'avatar']
-
+        extra_kwargs = {
+            "email": {"required": False},
+            "first_name": {"required": False},
+            "last_name": {"required": False},
+            "phone_number": {"required": False}
+        }
