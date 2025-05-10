@@ -20,6 +20,7 @@ class Category(models.Model):
 
 class Banner(models.Model):
     title = models.CharField(max_length=100)
+    description = models.TextField() 
     image = CompressedImageField(upload_to="banner",null=True, blank=True)
     class Meta:
         verbose_name = 'banner'

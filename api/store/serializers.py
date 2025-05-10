@@ -13,7 +13,7 @@ class CategorySerializer(ModelSerializer):
 class BannerSerializer(ModelSerializer):
     class Meta:
         model = Banner
-        fields = ['id','image']
+        fields = ['id','title','description','image']
 
 class CommentsSerializer(ModelSerializer):
     user = serializers.CharField(source='user.username', read_only=True)
